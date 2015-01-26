@@ -20,56 +20,55 @@ function gotSources(mediaSources) {
 }
 
 function createBubble(videoSourceId) {
-  console.log('createBubble');
   var windowOptions = {
     id: 'bubble',
     alphaEnabled: true,
     alwaysOnTop: true,
     frame: 'none',
-    hidden: true,
     resizable: false,
+    innerBounds: {
+      width: DEFAULT_BUBBLE_SIZE,
+      height: DEFAULT_BUBBLE_SIZE,
+    },
   };
   chrome.app.window.create('bubble.html', windowOptions, function(appWindow) {
-    showBubble(appWindow, videoSourceId, onBubbleCreated);
+    captureVideo(appWindow, videoSourceId);
     appWindow.onClosed.addListener(function() {
       window.close();
     })
   });
 }
 
-function showBubble(appWindow, videoSourceId, callback) {
+function captureVideo(appWindow, videoSourceId) {
   var constraints = {video: {optional: [{sourceId: videoSourceId}]}};
   navigator.getUserMedia(constraints, function(stream) {
     var video = appWindow.contentWindow.document.querySelector('video');
     video.src = URL.createObjectURL(stream);
-    console.log('show');
-    callback(appWindow);
-  }, function() {});
-}
-
-function onBubbleCreated(appWindow) {
-  var video = appWindow.contentWindow.document.querySelector('video');
-  video.addEventListener('loadeddata', function() {
-    resizeBubble(appWindow, DEFAULT_BUBBLE_SIZE);
-    appWindow.show();
+  }, function() {
+    chrome.notifications.create('id', {
+      iconUrl: chrome.runtime.getURL('assets/icon_128.png'),
+      message: 'Bubble cannot get video source.... Please try again.',
+      title: 'Saperlipopette!',
+      type: 'basic',
+    }, function() {
+      appWindow.close();
+    });
   });
 }
 
 function resizeBubble(appWindow, size) {
-  console.log('resizeBubble', size);
   appWindow.resizeTo(size, size);
   var video = appWindow.contentWindow.document.querySelector('video');
-  video.width = video.height = size;
+  video.style.width = video.style.height = size + 'px';
   video.style.borderRadius = Math.round(size / 2) + 'px';
 }
 
 function onContextMenuClicked(event) {
   var appWindow = chrome.app.window.get('bubble');
-  console.log('onContextMenuClicked');
   if (event.menuItemId === 'useBigBubble') {
     resizeBubble(appWindow, event.checked ? DEFAULT_BUBBLE_SIZE * 2 : DEFAULT_BUBBLE_SIZE);
   } else {
-    showBubble(appWindow, event.menuItemId, function() {});
+    captureVideo(appWindow, event.menuItemId);
   }
 };
 

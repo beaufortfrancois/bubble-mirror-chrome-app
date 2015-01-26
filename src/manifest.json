@@ -11,7 +11,13 @@
     "128": "assets/icon_128.png"
   },
 
-  "permissions": [ "app.window.alpha", "app.window.alwaysOnTop", "videoCapture", "contextMenus"],
+  "permissions": [
+    "app.window.alpha",
+    "app.window.alwaysOnTop",
+    "contextMenus",
+    "notifications",
+    "videoCapture"
+  ],
 
   "app": {
     "background": {
