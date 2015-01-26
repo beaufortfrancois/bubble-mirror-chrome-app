@@ -31,6 +31,9 @@ function createBubble(videoSourceId) {
   };
   chrome.app.window.create('bubble.html', windowOptions, function(appWindow) {
     showBubble(appWindow, videoSourceId, onBubbleCreated);
+    appWindow.onClosed.addListener(function() {
+      window.close();
+    })
   });
 }
 
