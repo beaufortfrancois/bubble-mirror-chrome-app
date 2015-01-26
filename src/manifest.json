@@ -1,0 +1,21 @@
+{
+  "manifest_version": 2,
+  "name": "bubble-camera-chrome-app",
+  "short_name": "bubble-camera-chrome-app",
+  "description": "",
+  "version": "0.0.1",
+  "minimum_chrome_version": "38",
+
+  "icons": {
+    "16": "assets/icon_16.png",
+    "128": "assets/icon_128.png"
+  },
+
+  "permissions": [ "app.window.alpha", "app.window.alwaysOnTop", "videoCapture", "contextMenus"],
+
+  "app": {
+    "background": {
+      "scripts": ["background.js"]
+    }
+  }
+}
