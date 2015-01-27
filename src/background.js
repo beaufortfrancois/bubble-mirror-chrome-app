@@ -4,6 +4,14 @@ navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia;
 
 function gotSources(mediaSources) {
   var videoSources = mediaSources.filter(function(source) { return source.kind === 'video' });
+
+  var deviceContextMenuOptions = {
+    contexts: ['launcher'],
+    title: 'Source',
+    id: 'videoSource'
+  }
+  chrome.contextMenus.create(deviceContextMenuOptions);
+
   for (var i = 0; i < videoSources.length; i++) {
     var contextOptions = {
       contexts: ['launcher'],
@@ -32,12 +40,16 @@ function createBubble(videoSourceId) {
     },
   };
   chrome.app.window.create('bubble.html', windowOptions, function(appWindow) {
-    captureVideo(appWindow, videoSourceId);
+    appWindow.contentWindow.document.addEventListener('DOMContentLoaded', function() {
+      initContextMenus(appWindow);
+      captureVideo(appWindow, videoSourceId);
+      resizeBubble(appWindow, appWindow.innerBounds.width);
+    });
     appWindow.onClosed.addListener(function() {
       chrome.contextMenus.removeAll(function() {
         window.close();
       });
-    })
+    });
   });
 }
 
@@ -63,12 +75,10 @@ function captureVideo(appWindow, videoSourceId) {
 }
 
 function resizeBubble(appWindow, size) {
-  appWindow.hide();
   appWindow.resizeTo(size, size);
   var video = appWindow.contentWindow.document.querySelector('video');
   video.style.width = video.style.height = size + 'px';
   video.style.borderRadius = Math.round(size / 2) + 'px';
-  appWindow.show();
 }
 
 function onContextMenuClicked(event) {
@@ -80,23 +90,19 @@ function onContextMenuClicked(event) {
   }
 };
 
-chrome.contextMenus.onClicked.addListener(onContextMenuClicked);
-
-chrome.app.runtime.onLaunched.addListener(function(launchData) {
-  MediaStreamTrack.getSources(gotSources);
-
+function initContextMenus(appWindow) {
   var bubbleSizeContextOptions = {
     contexts: ['launcher'],
     type: 'checkbox',
-    checked: true,
+    checked: (appWindow.innerBounds.width === DEFAULT_BUBBLE_SIZE),
     title: 'Small Bubbles',
     id: 'smallBubble'
   }
-  var deviceContextMenuOptions = {
-    contexts: ['launcher'],
-    title: 'Source',
-    id: 'videoSource'
-  }
   chrome.contextMenus.create(bubbleSizeContextOptions);
-  chrome.contextMenus.create(deviceContextMenuOptions);
+};
+
+chrome.contextMenus.onClicked.addListener(onContextMenuClicked);
+
+chrome.app.runtime.onLaunched.addListener(function() {
+  MediaStreamTrack.getSources(gotSources);
 });
