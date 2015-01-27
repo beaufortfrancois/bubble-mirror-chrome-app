@@ -43,7 +43,7 @@ function createBubble(videoSourceId) {
 
 function captureVideo(appWindow, videoSourceId) {
   appWindow.hide();
-  var constraints = {video: {optional: [{sourceId: videoSourceId}]}};
+  var constraints = { video: { optional: [{ sourceId: videoSourceId }]}};
   navigator.getUserMedia(constraints, function(stream) {
     var video = appWindow.contentWindow.document.querySelector('video');
     video.addEventListener('canplay', function() {
@@ -51,7 +51,7 @@ function captureVideo(appWindow, videoSourceId) {
     });
     video.src = URL.createObjectURL(stream);
   }, function() {
-    chrome.notifications.create('id', {
+    chrome.notifications.create({
       iconUrl: chrome.runtime.getURL('assets/icon_128.png'),
       message: 'Bubble cannot get video source.... Please try again.',
       title: 'Saperlipopette!',
@@ -63,10 +63,12 @@ function captureVideo(appWindow, videoSourceId) {
 }
 
 function resizeBubble(appWindow, size) {
+  appWindow.hide();
   appWindow.resizeTo(size, size);
   var video = appWindow.contentWindow.document.querySelector('video');
   video.style.width = video.style.height = size + 'px';
   video.style.borderRadius = Math.round(size / 2) + 'px';
+  appWindow.show();
 }
 
 function onContextMenuClicked(event) {
