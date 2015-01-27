@@ -34,7 +34,9 @@ function createBubble(videoSourceId) {
   chrome.app.window.create('bubble.html', windowOptions, function(appWindow) {
     captureVideo(appWindow, videoSourceId);
     appWindow.onClosed.addListener(function() {
-      window.close();
+      chrome.contextMenus.removeAll(function() {
+        window.close();
+      });
     })
   });
 }
@@ -65,8 +67,8 @@ function resizeBubble(appWindow, size) {
 
 function onContextMenuClicked(event) {
   var appWindow = chrome.app.window.get('bubble');
-  if (event.menuItemId === 'useBigBubble') {
-    resizeBubble(appWindow, event.checked ? DEFAULT_BUBBLE_SIZE * 2 : DEFAULT_BUBBLE_SIZE);
+  if (event.menuItemId === 'smallBubble') {
+    resizeBubble(appWindow, event.checked ? DEFAULT_BUBBLE_SIZE : DEFAULT_BUBBLE_SIZE * 2);
   } else {
     captureVideo(appWindow, event.menuItemId);
   }
@@ -76,19 +78,17 @@ chrome.contextMenus.onClicked.addListener(onContextMenuClicked);
 
 chrome.app.runtime.onLaunched.addListener(function(launchData) {
   MediaStreamTrack.getSources(gotSources);
-});
 
-chrome.runtime.onInstalled.addListener(function() {
   var bubbleSizeContextOptions = {
     contexts: ['launcher'],
     type: 'checkbox',
-    checked: false,
-    title: 'Use big bubbles',
-    id: 'useBigBubble'
+    checked: true,
+    title: 'Small Bubbles',
+    id: 'smallBubble'
   }
   var deviceContextMenuOptions = {
     contexts: ['launcher'],
-    title: 'Media Source',
+    title: 'Source',
     id: 'videoSource'
   }
   chrome.contextMenus.create(bubbleSizeContextOptions);
