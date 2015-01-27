@@ -6,7 +6,8 @@
 
   "icons": {
     "16": "assets/icon_16.png",
-    "128": "assets/icon_128.png"
+    "128": "assets/icon_128.png",
+    "256": "assets/icon_256.png"
   },
 
   "permissions": [
