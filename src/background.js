@@ -42,9 +42,13 @@ function createBubble(videoSourceId) {
 }
 
 function captureVideo(appWindow, videoSourceId) {
+  appWindow.hide();
   var constraints = {video: {optional: [{sourceId: videoSourceId}]}};
   navigator.getUserMedia(constraints, function(stream) {
     var video = appWindow.contentWindow.document.querySelector('video');
+    video.addEventListener('canplay', function() {
+      appWindow.show();
+    });
     video.src = URL.createObjectURL(stream);
   }, function() {
     chrome.notifications.create('id', {
