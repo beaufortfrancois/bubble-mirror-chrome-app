@@ -6,6 +6,6 @@ This is easily achieved by combining the [`app.window.alpha`](https://developer.
 
 And last, but not least, you can choose the Video Source in [Context Menu options](https://developer.chrome.com/apps/contextMenus).
 
-Get it on the Chrome Web Store at https://chrome.google.com/webstore/detail/TODO
+Get it on the Chrome Web Store at https://chrome.google.com/webstore/detail/mdebpbggmcnpmpndgppmljplihbmbamb
 
 <img src="https://raw.githubusercontent.com/beaufortfrancois/bubble-mirror-chrome-app/master/screenshot.png">
